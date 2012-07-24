@@ -1,0 +1,20 @@
+
+Hey, this is going to be all things Fabric for getting Fanonic.net servers up-and-running.
+
+- south tasks
+
+- db tasks: create db + permissions, dump database, restore database
+
+- nginx tasks: restart, put into maintenance mode
+
+- puppet tasks: push puppet config to host and apply puppet
+
+- web tasks: push static content, push source code, fetch uploaded media to local system, check that web server is up
+
+- search index tasks: rebuild/update index
+
+- Prompt the user to enter random words to prevent doing something stupid
+
+- notification tasks: SNS, email, etc
+
+- misc: happy, sad
