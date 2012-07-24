@@ -4,8 +4,10 @@ Web server related utilities.
 import os.path
 
 from fabric.api import task, runs_once, local, prefix, lcd, env, roles, \
-        require, settings
+        require, settings, execute, sudo
 from fabric.contrib.project import rsync_project
+
+from fabtools.utils import happy, sad, starting
 
 
 @task
@@ -15,7 +17,7 @@ def update_static():
     Collect static media into the static/ directory and upload.
     """
     require('static_path')
-    build_static()
+    execute(build_static)
     rsync_project(remote_dir=env.static_path, local_dir='static/', extra_opts="--rsync-path='sudo rsync'")
 
 
@@ -26,5 +28,60 @@ def build_static():
     with lcd('project'):
         with prefix('source %s' % env.venv_activate):
             with prefix('PYTHONPATH+=":.."'):
-                local('python manage.py compress --settings=settings_build')
                 local('python manage.py collectstatic --settings=settings_build --noinput')
+                local('python manage.py compress --settings=settings_build')
+
+@task
+@roles('staticserver', 'appserver')
+def restart():
+    execute(restart_uwsgi)
+    execute(restart_nginx)
+
+
+@task
+@roles('staticserver', 'appserver')
+def restart_nginx():
+    sudo('/etc/init.d/nginx restart')
+
+
+@task
+@roles('appserver')
+def restart_uwsgi():
+    sudo('/etc/init.d/uwsgi restart')
+
+
+@task
+@roles('staticserver')
+def check():
+    '''Check that the home page of the site returns an HTTP 200.'''
+    require('site_url')
+
+    print('Checking site status...')
+
+    if not '200 OK' in local('curl --silent -I "%s"' % env.site_url, capture=True):
+        sad()
+    else:
+        happy()
+
+
+@task
+@roles('staticserver')
+def maintenance_on():
+    """
+    Turn maintenance mode on.
+    """
+    starting()
+    require('app_path')
+    run('touch %(app_path)s/.upgrading' % env)
+
+    
+@task
+@roles('staticserver')
+def maintenance_off():
+    """
+    Turn maintenance mode off.
+    """
+    starting()
+    require('app_path')
+    run('rm -f %(app_path)s/.upgrading' % env)
+    check()

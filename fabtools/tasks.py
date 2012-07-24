@@ -9,7 +9,7 @@ Use these tasks by importing all of them into your fabfile.
 """
 from fabric.api import task, require, roles, local, run, cd, env, sudo, put, run, execute
 
-from fabtools.webserver import update_static
+from fabtools.webserver import update_static, restart, check
 from fabtools.database import django_update
 
 
@@ -17,6 +17,7 @@ from fabtools.database import django_update
 @roles('appserver')
 def push_source():
     require('app_path', 'project_name')
+    # TODO detect if no changes made since last archive and skip push unless force param = True
     local("git archive --format=tar HEAD | gzip > %(project_name)s.tar.gz" % env)
     sudo("rm -rf %(app_path)s/*" % env)
     with cd(env.app_path):
@@ -30,3 +31,5 @@ def deploy():
     execute(push_source)
     execute(django_update)
     execute(update_static)
+    execute(restart)
+    execute(check)
