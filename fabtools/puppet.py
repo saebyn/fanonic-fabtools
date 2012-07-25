@@ -17,10 +17,11 @@ def apply(path):
     target_directory = '/tmp/puppet'
     module_path = os.path.join(target_directory, 'modules')
     manifest_path = os.path.join(target_directory, 'manifests', 'site.pp')
+    sudo('mkdir -p %s' % (target_directory,))
     # Give the env.user permsions on the target directory
     sudo('chown %s %s' % (env.user, target_directory))
     # get consistent local path to make rsync happy
-    path = os.path.join(os.path.split(path)) + '/'
-    rsync_project(remote_dir=target_directory, local_dir=path)
+    path = os.path.normpath(path) + '/'
+    rsync_project(remote_dir=target_directory, local_dir=path, extra_opts='--exclude=.git --exclude=manifests/src')
     with cd(target_directory):
-        sudo('puppet apply --module-path=%s %s' % (module_path, manifest_path))
+        sudo('puppet apply --modulepath=%s %s' % (module_path, manifest_path))

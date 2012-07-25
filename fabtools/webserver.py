@@ -4,7 +4,7 @@ Web server related utilities.
 import os.path
 
 from fabric.api import task, runs_once, local, prefix, lcd, env, roles, \
-        require, settings, execute, sudo
+        require, settings, execute, sudo, run
 from fabric.contrib.project import rsync_project
 
 from fabtools.utils import happy, sad, starting
@@ -58,7 +58,8 @@ def check():
 
     print('Checking site status...')
 
-    if not '200 OK' in local('curl --silent -I "%s"' % env.site_url, capture=True):
+    # TODO we could use the -I option if our pages supported HEAD method
+    if not '200 OK' in local('curl --silent "%s"' % env.site_url, capture=True):
         sad()
     else:
         happy()
