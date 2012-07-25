@@ -1,5 +1,7 @@
 
 import inspect
+import sys
+import random
 
 from fabric.api import task, require, prefix, cd, run, env, sudo
 from fabric.colors import green, yellow, red
@@ -69,3 +71,22 @@ def sad():
            Something seems to have gone wrong!
            You should probably take a look at that.
     '''))
+
+
+def prevent_pebkac():
+    """
+    Prevents PEBKAC.
+    """
+    print(red('Are you sure you want to do this???'))
+    n, m = random.randint(1, 100), random.randint(1, 100)
+    print(yellow('Confirm by entering the sum of %d and %d' % (n, m)))
+    try:
+        value = input('>>> ')
+    except:
+        value = -1
+
+    if value != n + m:
+        print(red('Nope, not going to do it!'))
+        sys.exit(1)
+
+    print(green('Good!'))

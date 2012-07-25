@@ -2,6 +2,7 @@
 Web server related utilities.
 """
 import os.path
+import time
 
 from fabric.api import task, runs_once, local, prefix, lcd, env, roles, \
         require, settings, execute, sudo, run
@@ -59,7 +60,7 @@ def check():
     print('Checking site status...')
 
     # TODO we could use the -I option if our pages supported HEAD method
-    if not '200 OK' in local('curl --silent "%s"' % env.site_url, capture=True):
+    if not '200' in local('curl --silent -o /dev/null -w "%%{http_code}" "%s"' % env.site_url, capture=True):
         sad()
     else:
         happy()
@@ -85,4 +86,5 @@ def maintenance_off():
     starting()
     require('app_path')
     run('rm -f %(app_path)s/.upgrading' % env)
+    time.sleep(5)
     check()

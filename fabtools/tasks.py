@@ -44,7 +44,7 @@ def deploy():
     execute(maintenance_on)
     execute(push_source)
     execute(django_update)
-    execute(update_index)
+    execute(update_index, 'fanfic')
     execute(update_static)
     execute(restart)
     execute(maintenance_off)
