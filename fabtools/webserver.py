@@ -19,7 +19,9 @@ def update_static():
     """
     require('static_path')
     execute(build_static)
-    rsync_project(remote_dir=env.static_path, local_dir='static/', extra_opts="--rsync-path='sudo rsync'")
+    rsync_project(remote_dir=env.static_path,
+            local_dir='static/',
+            extra_opts="--rsync-path='sudo rsync'")
 
 
 @task
@@ -77,7 +79,7 @@ def maintenance_on():
     require('app_path')
     run('touch %(app_path)s/.upgrading' % env)
 
-    
+
 @task
 @roles('staticserver')
 def maintenance_off():
