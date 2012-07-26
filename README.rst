@@ -8,6 +8,20 @@ Hey, this is going to be all things Fabric for getting Fanonic.net servers up-an
 Copyright (c) 2012 John Weaver
 MIT License
 
+Example Usage
+-------------
+
+Add this to your fabfile.py::
+
+  import fabtools
+  from fabtools.tasks import *
+
+
+Import any modules that you want available::
+
+  import fabtools.webserver
+  import fabtools.celery
+
 
 What's done
 -----------
