@@ -6,4 +6,4 @@ Example usage
 >>> from fabutils.tasks import *
 """
 
-__all__ = ["database", "puppet", "search", "south", "utils", "vagrant", "webserver", "django"]
+__all__ = ["database", "puppet", "search", "south", "utils", "vagrant", "webserver", "django", "celery"]

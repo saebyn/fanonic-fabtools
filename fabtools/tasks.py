@@ -10,8 +10,12 @@ Use these tasks by importing all of them into your fabfile.
 from fabric.api import task, require, roles, local, run, cd, env, sudo, put, run, execute
 
 from fabtools.webserver import update_static, restart, check, maintenance_on, maintenance_off
+import fabtools.celery
 from fabtools.database import django_update
 from fabtools.search import update_index
+
+
+__all__ = ('push_source', 'deploy')
 
 
 @task
@@ -47,4 +51,5 @@ def deploy():
     execute(update_index, 'fanfic')
     execute(update_static)
     execute(restart)
+    execute(fabtools.celery.restart)
     execute(maintenance_off)

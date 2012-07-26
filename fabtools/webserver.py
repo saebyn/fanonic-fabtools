@@ -32,6 +32,7 @@ def build_static():
                 local('python manage.py collectstatic --settings=settings_build --noinput')
                 local('python manage.py compress --settings=settings_build')
 
+
 @task
 @roles('staticserver', 'appserver')
 def restart():
