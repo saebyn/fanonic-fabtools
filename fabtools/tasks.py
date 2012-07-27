@@ -27,13 +27,12 @@ def push_source():
     # TODO detect if no changes made since last archive and skip push unless
     # force param = True
     local("git archive --format=tar HEAD | gzip > %(project_name)s.tar.gz" % env)
+    put('%(project_name)s.tar.gz' % env, '/tmp/%(project_name)s.tar.gz' % env)
     sudo("rm -rf %(app_path)s/*" % env)
     sudo('mkdir -p %(app_path)s' % env)
     with cd(env.app_path):
-        put('%(project_name)s.tar.gz' % env, '%(project_name)s.tar.gz' % env,
-                use_sudo=True)
-        sudo("tar zxf %(project_name)s.tar.gz" % env)
-        sudo("rm %(project_name)s.tar.gz" % env)
+        sudo("tar zxf /tmp/%(project_name)s.tar.gz" % env)
+        sudo("rm /tmp/%(project_name)s.tar.gz" % env)
         sudo('mkdir -p project/whoosh')
         sudo('chown www-data:www-data project/whoosh')
         sudo('chmod ug+rw project/whoosh')
