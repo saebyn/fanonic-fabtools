@@ -8,7 +8,7 @@ from fabric.api import task, runs_once, local, prefix, lcd, env, roles, \
         require, settings, execute, sudo, run
 from fabric.contrib.project import rsync_project
 
-from fabtools.utils import happy, sad, starting
+from fabtools.utils import happy, sad, starting, lcd_git_root
 
 
 @task
@@ -19,20 +19,22 @@ def update_static():
     """
     require('static_path')
     execute(build_static)
-    rsync_project(remote_dir=env.static_path,
-            local_dir='static/',
-            extra_opts="--rsync-path='sudo rsync'")
+    with lcd_git_root():
+        rsync_project(remote_dir=env.static_path,
+                local_dir='static/',
+                extra_opts="--rsync-path='sudo rsync'")
 
 
 @task
 @runs_once
 def build_static():
     require('venv_activate')
-    with lcd('project'):
-        with prefix('source %s' % env.venv_activate):
-            with prefix('PYTHONPATH+=":.."'):
-                local('python manage.py collectstatic --settings=settings_build --noinput')
-                local('python manage.py compress --settings=settings_build')
+    with lcd_git_root():
+        with lcd('project'):
+            with prefix('source %s' % env.venv_activate):
+                with prefix('PYTHONPATH+=":.."'):
+                    local('python manage.py collectstatic --settings=settings_build --noinput')
+                    local('python manage.py compress --settings=settings_build')
 
 
 @task

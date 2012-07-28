@@ -2,9 +2,24 @@
 import inspect
 import sys
 import random
+import os
+import os.path
 
-from fabric.api import task, require, prefix, cd, run, env, sudo
+from fabric.api import task, require, prefix, cd, run, env, sudo, lcd
 from fabric.colors import green, yellow, red
+
+
+def lcd_git_root():
+    path = os.getcwd()
+    while True:
+        if os.path.isdir(os.path.join(path, '.git')):
+            break
+
+        path, curdir = os.path.split(path)
+        if path is None and curdir is None:
+            raise Exception('Could not find top-level of git repository.')
+
+    return lcd(path)
 
 
 def apprun(command, **kwargs):
